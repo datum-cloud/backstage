@@ -1,0 +1,25 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  snyk:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    uses: datum-cloud/actions/.github/workflows/snyk-scan.yaml@v1.16.0
+    with:
+      severity-threshold: high
+      upload-sarif: true
+    secrets: inherit
