@@ -1,5 +1,5 @@
 app:
-  title: Scaffolded Backstage App
+  title: Datum Portal
   baseUrl: http://localhost:3000
 
   # Enable all packages by default, this will discover packages from packages/app/package.json
@@ -10,9 +10,12 @@ app:
     - page:catalog:
         config:
           path: /
+    # Replace the built-in themes with the Datum-branded themes
+    - theme:app/light: false
+    - theme:app/dark: false
 
 organization:
-  name: My Company
+  name: Datum
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
