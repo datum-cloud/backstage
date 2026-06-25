@@ -1,0 +1,76 @@
+name: E2E
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  kind-e2e:
+    runs-on: ubuntu-latest
+    env:
+      CLUSTER_NAME: backstage-e2e
+      IMAGE: backstage:e2e
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/backend/Dockerfile
+          load: true
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+
+      - name: Load image into kind
+        run: kind load docker-image "${IMAGE}" --name "${CLUSTER_NAME}"
+
+      - name: Deploy test overlay
+        run: kustomize build config/test | kubectl apply -f -
+
+      - name: Wait for PostgreSQL
+        run: kubectl -n backstage rollout status deploy/postgres --timeout=5m
+
+      - name: Wait for Backstage
+        run: kubectl -n backstage rollout status deploy/backstage --timeout=10m
+
+      - name: Smoke test backend
+        run: |
+          kubectl -n backstage run curl-smoke \
+            --image=curlimages/curl:8.10.1 \
+            --restart=Never --rm -i --quiet -- \
+            sh -ceu '
+              echo "readiness:"
+              code=$(curl -sS -o /dev/null -w "%{http_code}" http://backstage:7007/.backstage/health/v1/readiness)
+              echo "$code"
+              [ "$code" = "200" ]
+
+              echo "liveness:"
+              code=$(curl -sS -o /dev/null -w "%{http_code}" http://backstage:7007/.backstage/health/v1/liveness)
+              echo "$code"
+              [ "$code" = "200" ]
+
+              echo "catalog entities:"
+              code=$(curl -sS -o /dev/null -w "%{http_code}" http://backstage:7007/api/catalog/entities)
+              echo "$code"
+              [ "$code" = "200" ]
+            '
+
+      - name: Dump diagnostics
+        if: failure()
+        run: |
+          kubectl -n backstage get pods,svc
+          kubectl -n backstage describe deploy/backstage
+          kubectl -n backstage logs deploy/backstage --all-containers --tail=200 || true
