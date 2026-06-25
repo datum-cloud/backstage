@@ -16,10 +16,24 @@ spec:
         app.kubernetes.io/name: backstage
     spec:
       serviceAccountName: backstage
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: backstage
           image: ghcr.io/datum-cloud/backstage
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: 7007
@@ -45,4 +59,15 @@ spec:
               cpu: 500m
               memory: 512Mi
             limits:
+              cpu: "1"
               memory: 1Gi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: home-cache
+              mountPath: /home/node/.cache
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: home-cache
+          emptyDir: {}
