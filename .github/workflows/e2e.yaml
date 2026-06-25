@@ -40,11 +40,18 @@ jobs:
       - name: Load image into kind
         run: kind load docker-image "${IMAGE}" --name "${CLUSTER_NAME}"
 
-      - name: Deploy test overlay
-        run: kustomize build config/test | kubectl apply -f -
+      - name: Install CloudNativePG operator
+        run: |
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
+          helm upgrade --install cnpg cnpg/cloudnative-pg \
+            --namespace cnpg-system --create-namespace \
+            --version '0.28.x' --wait --timeout 5m
+
+      - name: Deploy e2e overlay
+        run: kubectl kustomize config/overlays/e2e | kubectl apply --server-side -f -
 
       - name: Wait for PostgreSQL
-        run: kubectl -n backstage rollout status deploy/postgres --timeout=5m
+        run: kubectl -n backstage wait --for=condition=Ready cluster/backstage-postgres --timeout=5m
 
       - name: Wait for Backstage
         run: kubectl -n backstage rollout status deploy/backstage --timeout=10m
@@ -74,6 +81,7 @@ jobs:
       - name: Dump diagnostics
         if: failure()
         run: |
-          kubectl -n backstage get pods,svc
+          kubectl -n backstage get pods,svc,cluster
+          kubectl -n backstage describe cluster/backstage-postgres || true
           kubectl -n backstage describe deploy/backstage
           kubectl -n backstage logs deploy/backstage --all-containers --tail=200 || true
