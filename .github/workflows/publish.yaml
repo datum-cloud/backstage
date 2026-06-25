@@ -2,7 +2,8 @@ name: Publish Docker Image
 
 on:
   push:
-  pull_request:
+    branches: [main]
+    tags: ['v*']
   release:
     types: ['published']
 
