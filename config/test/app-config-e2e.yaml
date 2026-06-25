@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-app-config-e2e
+  namespace: backstage
+data:
+  app-config.e2e.yaml: |
+    app:
+      baseUrl: http://localhost:7007
+
+    backend:
+      baseUrl: http://localhost:7007
+      listen:
+        port: 7007
+        host: 0.0.0.0
+      csp:
+        connect-src: ["'self'", 'http:', 'https:']
+      cors:
+        origin: http://localhost:7007
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      database:
+        client: pg
+        connection:
+          host: ${POSTGRES_HOST}
+          port: ${POSTGRES_PORT}
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+      auth:
+        dangerouslyDisableDefaultAuthPolicy: true
+
+    auth:
+      providers:
+        guest:
+          dangerouslyAllowOutsideDevelopment: true
+
+    integrations: {}
+
+    catalog:
+      providers: {}
+      locations:
+        - type: file
+          target: /app/examples/entities.yaml
+        - type: file
+          target: /app/examples/org.yaml
+          rules:
+            - allow: [User, Group]
