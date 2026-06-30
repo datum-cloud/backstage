@@ -6,7 +6,22 @@
   "backstage": {
     "role": "frontend"
   },
-  "configSchema": "config.d.ts",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "signInPage": {
+            "type": "object",
+            "properties": {
+              "provider": { "type": "string", "visibility": "frontend" }
+            }
+          }
+        }
+      }
+    }
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
