@@ -7,5 +7,10 @@ resources:
   - service.yaml
   - deployment.yaml
 
+components:
+  - ../components/database-cnpg
+  - ../components/networking
+  - ../components/app-config
+
 images:
   - name: ghcr.io/datum-cloud/backstage
