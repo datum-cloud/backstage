@@ -5,6 +5,12 @@ app:
   # Enable all packages by default, this will discover packages from packages/app/package.json
   packages: all
 
+  # When set, the sign-in page proxies to this auth provider (the gateway
+  # session) instead of showing guest sign-in. Left unset for local dev / e2e
+  # so the guest sign-in page is used. See auth.providers.datumGateway below.
+  # signInPage:
+  #   provider: datumGateway
+
   extensions:
     # Configure the catalog index page to be the root page, this is normally mounted on /catalog
     - page:catalog:
@@ -85,6 +91,19 @@ auth:
   providers:
     # See https://backstage.io/docs/auth/guest/provider
     guest: {}
+    # Trust the identity forwarded by the internal-auth gateway. Left unset for
+    # local dev (guest is used); enable per-environment by providing the block
+    # below. The provider validates the raw OIDC ID token JWT the gateway
+    # forwards in `header` (signature via the issuer JWKS, plus
+    # issuer/audience/expiry) and resolves the email to a catalog User.
+    # datumGateway:
+    #   header: X-Auth-Request-Id-Token
+    #   issuer: https://accounts.google.com
+    #   audience: ${BACKSTAGE_GATEWAY_AUDIENCE}
+    #   jwksUrl: https://www.googleapis.com/oauth2/v3/certs
+    #   signIn:
+    #     resolvers:
+    #       - resolver: emailMatchingUserEntityProfileEmail
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
   # to learn more about client id metadata documents
   experimentalClientIdMetadataDocuments:
