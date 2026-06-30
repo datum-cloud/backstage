@@ -6,10 +6,6 @@ namespace: backstage
 resources:
   - ../../base
 
-components:
-  - ../../components/database-cnpg
-  - ../../components/app-config
-
 images:
   - name: ghcr.io/datum-cloud/backstage
     newName: backstage
