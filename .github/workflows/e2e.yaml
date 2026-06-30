@@ -47,6 +47,9 @@ jobs:
             --namespace cnpg-system --create-namespace \
             --version '0.28.x' --wait --timeout 5m
 
+      - name: Install Gateway API CRDs
+        run: kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+
       - name: Deploy e2e overlay
         run: kubectl kustomize config/overlays/e2e | kubectl apply --server-side -f -
 
