@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: backstage
+
+resources:
+  - ../../base
+
+components:
+  - ../../components/database-cnpg
+  - ../../components/app-config
+
+images:
+  - name: ghcr.io/datum-cloud/backstage
+    newName: backstage
+    newTag: e2e
+
+configMapGenerator:
+  - name: backstage-app-config
+    files:
+      - app-config.extra.yaml=app-config.e2e.yaml
+    options:
+      disableNameSuffixHash: true
