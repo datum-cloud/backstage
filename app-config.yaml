@@ -59,13 +59,21 @@ backend:
 integrations:
   github:
     - host: github.com
-      # This is a Personal Access Token or PAT from GitHub. You can find out how to generate this token, and more information
-      # about setting up the GitHub integration here: https://backstage.io/docs/integrations/github/locations#configuration
+      # Local development: a Personal Access Token. Resolves to empty when
+      # GITHUB_TOKEN is unset, so the integration is simply inactive locally.
+      # See https://backstage.io/docs/integrations/github/locations#configuration
       token: ${GITHUB_TOKEN}
-    ### Example for how to add your GitHub Enterprise instance using the API:
-    # - host: ghe.example.net
-    #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token: ${GHE_TOKEN}
+      # Deployed environments authenticate as a GitHub App instead of a PAT
+      # (org-wide install, higher rate limits, no personal token to rotate).
+      # The credentials are already projected into the pod by the
+      # external-secrets component (backstage-github-app -> GITHUB_APP_*).
+      # Enable per-environment by supplying this block from the deploy overlay:
+      # apps:
+      #   - appId: ${GITHUB_APP_ID}
+      #     clientId: ${GITHUB_CLIENT_ID}
+      #     clientSecret: ${GITHUB_CLIENT_SECRET}
+      #     webhookSecret: ${GITHUB_WEBHOOK_SECRET}
+      #     privateKey: ${GITHUB_PRIVATE_KEY}
 
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
@@ -126,6 +134,29 @@ catalog:
     pullRequestBranchName: backstage-integration
   rules:
     - allow: [Component, System, API, Resource, Location]
+  # GitHub as a source of catalog data. Left unset for local dev / e2e (which
+  # use the file locations below); enable per-environment from the deploy
+  # overlay, where the GitHub App credentials are available. `github` scans the
+  # org for catalog-info.yaml (self-declared component/API/dependency facts);
+  # `githubOrg` imports org members and teams as User/Group entities so
+  # `owner:` refs resolve to real groups.
+  # providers:
+  #   github:
+  #     datumCloud:
+  #       organization: datum-cloud
+  #       catalogPath: /catalog-info.yaml
+  #       filters:
+  #         repository: '.*'
+  #       schedule:
+  #         frequency: { minutes: 30 }
+  #         timeout: { minutes: 3 }
+  #   githubOrg:
+  #     - id: datum-cloud
+  #       githubUrl: https://github.com
+  #       orgs: [datum-cloud]
+  #       schedule:
+  #         frequency: { hours: 1 }
+  #         timeout: { minutes: 5 }
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
