@@ -25,7 +25,7 @@ jobs:
       contents: read
       packages: write
       attestations: write
-    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@605da9a9cc20ab7266d1635ec4ba9cd4f223f68c # v1.16.0
+    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@ae21ec822981e1ab9e48023ac3da57c964edad04 # v1.18.0
     with:
       image-name: backstage
       context: .
