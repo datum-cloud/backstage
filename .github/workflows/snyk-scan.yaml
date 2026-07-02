@@ -18,7 +18,7 @@ jobs:
       contents: read
       security-events: write
       actions: read
-    uses: datum-cloud/actions/.github/workflows/snyk-scan.yaml@605da9a9cc20ab7266d1635ec4ba9cd4f223f68c # v1.16.0
+    uses: datum-cloud/actions/.github/workflows/snyk-scan.yaml@ae21ec822981e1ab9e48023ac3da57c964edad04 # v1.18.0
     with:
       severity-threshold: high
       upload-sarif: true
