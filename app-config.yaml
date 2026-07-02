@@ -134,8 +134,12 @@ catalog:
   import:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
+  # Kinds accepted from catalog locations (e.g. the discovered
+  # catalog-info.yaml). Domain/Group are included so a repo's descriptor can
+  # declare its owning team and domain taxonomy; provider-emitted org data
+  # (githubOrg) bypasses these rules.
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Location, Domain, Group]
   # GitHub as a source of catalog data. Left unset for local dev / e2e (which
   # use the file locations below); enable per-environment from the deploy
   # overlay, where the GitHub App credentials are available. `github` scans the
