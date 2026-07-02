@@ -65,10 +65,11 @@ integrations:
       token: ${GITHUB_TOKEN}
       # Deployed environments authenticate as a GitHub App instead of a PAT
       # (org-wide install, higher rate limits, no personal token to rotate).
-      # The credentials are already projected into the pod by the
-      # external-secrets component (backstage-github-app -> GITHUB_APP_*).
-      # Catalog discovery polls GitHub outbound on a schedule, so no inbound
-      # webhook (and no webhookSecret) is required — see catalog.providers below.
+      # The environment's infra overlay projects the credentials into the pod
+      # (an ExternalSecret + envFrom -> GITHUB_APP_*); this repo does not own
+      # that env-specific secret wiring. Catalog discovery polls GitHub
+      # outbound on a schedule, so no inbound webhook (and no webhookSecret) is
+      # required — see catalog.providers below.
       # Enable per-environment by supplying this block from the deploy overlay:
       # apps:
       #   - appId: ${GITHUB_APP_ID}
