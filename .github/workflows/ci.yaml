@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Node and Yarn
+        uses: ./.github/actions/setup-node-yarn
+      - name: Typecheck
+        run: yarn tsc:full
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Node and Yarn
+        uses: ./.github/actions/setup-node-yarn
+      - name: Lint
+        run: yarn lint:all
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CI: 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Setup Node and Yarn
+        uses: ./.github/actions/setup-node-yarn
+      - name: Unit tests
+        run: yarn test:all

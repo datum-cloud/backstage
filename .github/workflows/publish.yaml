@@ -8,13 +8,24 @@ on:
     types: ['published']
 
 jobs:
+  validate:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yaml
+
+  e2e:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/e2e.yaml
+
   publish-container-image:
+    needs: [validate, e2e]
     permissions:
       id-token: write
       contents: read
       packages: write
       attestations: write
-    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@v1.16.0
+    uses: datum-cloud/actions/.github/workflows/publish-docker.yaml@605da9a9cc20ab7266d1635ec4ba9cd4f223f68c # v1.16.0
     with:
       image-name: backstage
       context: .
@@ -22,13 +33,66 @@ jobs:
       platforms: linux/amd64
     secrets: inherit
 
+  sign-and-attest:
+    needs: publish-container-image
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+      attestations: write
+    env:
+      IMAGE: ghcr.io/datum-cloud/backstage
+      TAG: ${{ needs.publish-container-image.outputs.tag }}
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Resolve image digest
+        id: digest
+        run: |
+          digest=$(docker buildx imagetools inspect "${IMAGE}:${TAG}" --format '{{json .Manifest.Digest}}' | tr -d '"')
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+
+      - name: Sign image (keyless)
+        run: cosign sign --yes "${IMAGE}@${{ steps.digest.outputs.digest }}"
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: ${{ env.IMAGE }}@${{ steps.digest.outputs.digest }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.digest.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.digest.outputs.digest }}
+          sbom-path: sbom.spdx.json
+          push-to-registry: true
+
   publish-kustomize-bundle:
     needs: publish-container-image
     permissions:
       id-token: write
       contents: read
       packages: write
-    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@v1.16.0
+    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@605da9a9cc20ab7266d1635ec4ba9cd4f223f68c # v1.16.0
     with:
       bundle-name: ghcr.io/datum-cloud/backstage-kustomize
       bundle-path: config
