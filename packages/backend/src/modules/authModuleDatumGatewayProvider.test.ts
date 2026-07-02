@@ -13,7 +13,7 @@ const AUDIENCE = 'test-client-id.apps.googleusercontent.com';
 const HEADER = 'x-auth-request-id-token';
 const KID = 'test-key';
 
-let privateKey: jose.KeyLike;
+let privateKey: CryptoKey;
 
 const reqWith = (token?: string): Request =>
   ({
