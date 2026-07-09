@@ -93,7 +93,7 @@ jobs:
       id-token: write
       contents: read
       packages: write
-    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@ae21ec822981e1ab9e48023ac3da57c964edad04 # v1.18.0
+    uses: datum-cloud/actions/.github/workflows/publish-kustomize-bundle.yaml@a39a3b1772cda084b55e4504a48f39b4309a644b # v1.20.0
     with:
       bundle-name: ghcr.io/datum-cloud/backstage-kustomize
       bundle-path: config
