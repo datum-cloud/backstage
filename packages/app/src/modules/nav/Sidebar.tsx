@@ -8,6 +8,8 @@ import {
 } from '@backstage/core-components';
 import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarLogo } from './SidebarLogo';
+import AppsIcon from '@material-ui/icons/Apps';
+import GroupIcon from '@material-ui/icons/Group';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { SidebarSearchModal } from '@backstage/plugin-search';
@@ -33,6 +35,16 @@ export const SidebarContent = NavContentBlueprint.make({
           <SidebarDivider />
           <SidebarGroup label="Menu" icon={<MenuIcon />}>
             {nav.take('page:catalog')}
+            <SidebarItem
+              icon={AppsIcon}
+              to="/?filters[kind]=system"
+              text="Services"
+            />
+            <SidebarItem
+              icon={GroupIcon}
+              to="/?filters[kind]=group"
+              text="Teams"
+            />
             {nav.take('page:scaffolder')}
             <SidebarDivider />
             <SidebarScrollWrapper>
