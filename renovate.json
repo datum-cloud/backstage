@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>datum-cloud/.github:renovate-config"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["@backstage/**"],
+      "groupName": "backstage"
+    }
+  ]
+}
