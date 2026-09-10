@@ -7764,14 +7764,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.61.1":
-  version: 1.61.1
-  resolution: "@playwright/test@npm:1.61.1"
+"@playwright/test@npm:^1.63.0":
+  version: 1.63.0
+  resolution: "@playwright/test@npm:1.63.0"
   dependencies:
-    playwright: "npm:1.61.1"
+    playwright: "npm:1.63.0"
   bin:
     playwright: cli.js
-  checksum: 10c0/45004139eaa7c7ec8129e4ed77a9d734aa09ed40b69162b871e4123f1d70217b7b73651431a9343ed5090d5fed11c6df1bff2a56ff4b87dc7b0371b5da87cf9c
+  checksum: 10c0/795cd06c2eb6cb6142e72792f4df8f97665aa8c551c16278a7f2b3f31664e0cff07ed3c066490da55daf2fe51bc18e9c1ec6cba05b2c37387a0c49ad63017db8
   languageName: node
   linkType: hard
 
@@ -10466,7 +10466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:^16.0.0, @testing-library/react@npm:^16.3.2":
+"@testing-library/react@npm:^16.0.0":
   version: 16.3.2
   resolution: "@testing-library/react@npm:16.3.2"
   dependencies:
@@ -10486,12 +10486,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.0.0":
-  version: 14.6.1
-  resolution: "@testing-library/user-event@npm:14.6.1"
+"@testing-library/react@npm:^16.3.3":
+  version: 16.3.3
+  resolution: "@testing-library/react@npm:16.3.3"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+  peerDependencies:
+    "@testing-library/dom": ^10.0.0
+    "@types/react": ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^18.0.0 || ^19.0.0
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10c0/87d65cca71a39c93fffa23746a751a7037a4b4e939ea6b234af5188e4bdec96a7568b05000db109b5b76c686899e93a329a594d7e690674e30b35594c87c9e1d
+  languageName: node
+  linkType: hard
+
+"@testing-library/user-event@npm:^14.6.7":
+  version: 14.6.7
+  resolution: "@testing-library/user-event@npm:14.6.7"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 10c0/75fea130a52bf320d35d46ed54f3eec77e71a56911b8b69a3fe29497b0b9947b2dc80d30f04054ad4ce7f577856ae3e5397ea7dff0ef14944d3909784c7a93fe
+  checksum: 10c0/21f5e01bea2699b069947ae06d0b0fbabe0e90d2a2206b8f56a3f46126d09bd85320cba3fd3910c4d18710b1873e6966fb9021668966c615aaa14bf35d7df3ef
   languageName: node
   linkType: hard
 
@@ -12479,11 +12499,11 @@ __metadata:
     "@backstage/ui": "npm:^0.16.0"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
-    "@playwright/test": "npm:^1.61.1"
+    "@playwright/test": "npm:^1.63.0"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:^6.0.0"
-    "@testing-library/react": "npm:^16.3.2"
-    "@testing-library/user-event": "npm:^14.0.0"
+    "@testing-library/react": "npm:^16.3.3"
+    "@testing-library/user-event": "npm:^14.6.7"
     "@types/react-dom": "npm:*"
     cross-env: "npm:^10.1.0"
     react: "npm:^18.0.2"
@@ -13109,9 +13129,9 @@ __metadata:
     "@backstage/plugin-techdocs-backend": "npm:^2.2.1"
     app: "link:../app"
     better-sqlite3: "npm:^12.0.0"
-    jose: "npm:^6.2.3"
+    jose: "npm:^6.2.12"
     node-gyp: "npm:^10.0.0"
-    pg: "npm:^8.11.3"
+    pg: "npm:^8.23.0"
   languageName: unknown
   linkType: soft
 
@@ -17845,31 +17865,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:2.3.2":
-  version: 2.3.2
-  resolution: "fsevents@npm:2.3.2"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/be78a3efa3e181cda3cf7a4637cb527bcebb0bd0ea0440105a3bb45b86f9245b307dc10a2507e8f4498a7d4ec349d1910f4d73e4d4495b16103106e07eee735b
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
 "fsevents@npm:^2.3.3, fsevents@npm:~2.3.2":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/a1f0c44595123ed717febbc478aa952e47adfc28e2092be66b8ab1635147254ca6cfe1df792a8997f22716d4cbafc73309899ff7bfac2ac3ad8cf2e4ecc3ec60
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
-"fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>":
-  version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
-  dependencies:
-    node-gyp: "npm:latest"
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -20746,10 +20747,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^6.1.3, jose@npm:^6.2.2, jose@npm:^6.2.3":
+"jose@npm:^6.1.3, jose@npm:^6.2.2":
   version: 6.2.3
   resolution: "jose@npm:6.2.3"
   checksum: 10c0/aa91bccba22cc84d86308f833749bcb0b00441e35c24e0ac79abeac5f76dc62d47bdef9c1da6a0c609f5da6478595f52b252085888b89dbdb163861e40ea4188
+  languageName: node
+  linkType: hard
+
+"jose@npm:^6.2.12":
+  version: 6.2.12
+  resolution: "jose@npm:6.2.12"
+  checksum: 10c0/e8582b946fabcae228819982dda4849908c353e9cb098f02f773635aa0d2f4917f17484c7441b8d526e564013b4cf96951455c94f81d0a39ee765bad44ce293d
   languageName: node
   linkType: hard
 
@@ -24597,6 +24605,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-protocol@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "pg-protocol@npm:1.16.0"
+  checksum: 10c0/8ea4a8f4970aa0ca1e5bf9a482da0a41a043d7470fbaf7592736971146b09a2a4003d953c0091b72fc30bf7a7994a0b7fdf897bf50cd219787bd22806b3ffb04
+  languageName: node
+  linkType: hard
+
 "pg-types@npm:2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
@@ -24629,6 +24644,28 @@ __metadata:
     pg-native:
       optional: true
   checksum: 10c0/f26fe81c8146b802ac58b2a67570ab4f64cbd57d0752d0a6d1b2b1d12168adb241948e6129301b771a359bede6767181c5ac1a584a36bcfcd38ffe955237ee26
+  languageName: node
+  linkType: hard
+
+"pg@npm:^8.23.0":
+  version: 8.23.0
+  resolution: "pg@npm:8.23.0"
+  dependencies:
+    pg-cloudflare: "npm:^1.4.0"
+    pg-connection-string: "npm:^2.14.0"
+    pg-pool: "npm:^3.14.0"
+    pg-protocol: "npm:^1.16.0"
+    pg-types: "npm:2.2.0"
+    pgpass: "npm:1.0.5"
+  peerDependencies:
+    pg-native: ">=3.0.1"
+  dependenciesMeta:
+    pg-cloudflare:
+      optional: true
+  peerDependenciesMeta:
+    pg-native:
+      optional: true
+  checksum: 10c0/11ce12a71b4239588c18f078531c378d5bcdbcb9ea892e080a6e71f91aaece2b4b8fd93ee5777f94210f9258ff56161f8ed1a45050c32d295aaca037bba12ee8
   languageName: node
   linkType: hard
 
@@ -24787,27 +24824,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.61.1":
-  version: 1.61.1
-  resolution: "playwright-core@npm:1.61.1"
+"playwright-core@npm:1.63.0":
+  version: 1.63.0
+  resolution: "playwright-core@npm:1.63.0"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/c28896ba82a602182e240ed4f9c467fb0dd9cb57d510f8aba9f25183fe1cde3a0105725a29baffa4157fe885bbb11e228032a2aad0424111584fde45303f07bd
+  checksum: 10c0/39c1ebae4029ca2e9371e00a5588d962038e24b6e0bdb7d0d27374dde04838f349b83ae0c8b3b648653d0935cba7fb9011f1201adaab9dd0db7801ad6c75e9aa
   languageName: node
   linkType: hard
 
-"playwright@npm:1.61.1":
-  version: 1.61.1
-  resolution: "playwright@npm:1.61.1"
+"playwright@npm:1.63.0":
+  version: 1.63.0
+  resolution: "playwright@npm:1.63.0"
   dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.61.1"
-  dependenciesMeta:
-    fsevents:
-      optional: true
+    playwright-core: "npm:1.63.0"
   bin:
     playwright: cli.js
-  checksum: 10c0/cea1bc4d2a64ec3ef683891606774029da7b8a8036ed98332565cec2f8e89549ca1fab9a89fbfba4e08e27e0d7e7d148031e965af66d5ff97bb3c34058cfcad0
+  checksum: 10c0/d1fd048a89be27c9aba6757dc4f70eff4a5163b49f439ad691767be8b2a482327d0dd1928b4f73c8fe0d8b33aab2c9dc2670424ab60f112d9e98e91b94e3b090
   languageName: node
   linkType: hard
 
@@ -27340,7 +27373,7 @@ __metadata:
     "@backstage/cli-defaults": "npm:^0.1.3"
     "@backstage/e2e-test-utils": "npm:^0.1.2"
     "@jest/environment-jsdom-abstract": "npm:~30.4.1"
-    "@playwright/test": "npm:^1.61.1"
+    "@playwright/test": "npm:^1.63.0"
     "@types/jest": "npm:^30.0.0"
     jest: "npm:~30.4.2"
     jsdom: "npm:^29.1.1"
