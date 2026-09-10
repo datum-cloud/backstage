@@ -49,7 +49,7 @@
     "@backstage/plugin-signals-backend": "^0.3.16",
     "@backstage/plugin-techdocs-backend": "^2.2.1",
     "app": "link:../app",
-    "better-sqlite3": "^12.0.0",
+    "better-sqlite3": "^13.0.3",
     "jose": "^6.2.3",
     "node-gyp": "^10.0.0",
     "pg": "^8.11.3"
