@@ -7,8 +7,13 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { retryingDatabaseServiceFactory } from './services/database';
+import { startupDeadlineRootHealthServiceFactory } from './services/rootHealth';
 
 const backend = createBackend();
+
+backend.add(retryingDatabaseServiceFactory);
+backend.add(startupDeadlineRootHealthServiceFactory);
 
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-proxy-backend'));
@@ -73,4 +78,7 @@ backend.add(import('@backstage/plugin-signals-backend'));
 // mcp actions plugin
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
 
-backend.start();
+backend.start().catch(error => {
+  process.stderr.write(`Backend failed to start: ${error?.stack ?? error}\n`);
+  process.exit(1);
+});
