@@ -4,6 +4,8 @@ import {
   createServiceFactory,
   type DatabaseService,
   type LoggerService,
+  type RootConfigService,
+  type RootLifecycleService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 
@@ -16,25 +18,28 @@ const wait = (ms: number) =>
   });
 
 export function createRetryingDatabaseService(options: {
-  delegate: DatabaseService;
+  createDelegate: () => DatabaseService;
   logger: LoggerService;
   timeoutMs?: number;
   intervalMs?: number;
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
 }): DatabaseService {
-  const { delegate, logger } = options;
+  const { createDelegate, logger } = options;
   const timeoutMs = options.timeoutMs ?? DATABASE_STARTUP_TIMEOUT_MS;
   const intervalMs = options.intervalMs ?? DATABASE_RETRY_INTERVAL_MS;
   const now = options.now ?? (() => Date.now());
   const sleep = options.sleep ?? wait;
 
+  const first = createDelegate();
+
   return {
     get migrations() {
-      return delegate.migrations;
+      return first.migrations;
     },
     async getClient() {
       const deadline = now() + timeoutMs;
+      let delegate = first;
       for (let attempt = 1; ; attempt++) {
         try {
           return await delegate.getClient();
@@ -47,10 +52,28 @@ export function createRetryingDatabaseService(options: {
             error as Error,
           );
           await sleep(intervalMs);
+          delegate = createDelegate();
         }
       }
     },
   };
+}
+
+export function createDatabaseManager(
+  config: RootConfigService,
+  deps: {
+    rootLifecycle: RootLifecycleService;
+    rootLogger: LoggerService;
+  },
+): DatabaseManager {
+  const resolved = config.getOptional('backend.database')
+    ? config
+    : new ConfigReader({
+        backend: {
+          database: { client: 'better-sqlite3', connection: ':memory:' },
+        },
+      });
+  return DatabaseManager.fromConfig(resolved, deps);
 }
 
 export const retryingDatabaseServiceFactory = createServiceFactory({
@@ -63,25 +86,20 @@ export const retryingDatabaseServiceFactory = createServiceFactory({
     rootLifecycle: coreServices.rootLifecycle,
     rootLogger: coreServices.rootLogger,
   },
-  async createRootContext({ config, rootLifecycle, rootLogger }) {
-    return config.getOptional('backend.database')
-      ? DatabaseManager.fromConfig(config, { rootLifecycle, rootLogger })
-      : DatabaseManager.fromConfig(
-          new ConfigReader({
-            backend: {
-              database: { client: 'better-sqlite3', connection: ':memory:' },
-            },
-          }),
-          { rootLifecycle, rootLogger },
-        );
-  },
-  async factory({ pluginMetadata, lifecycle, logger }, databaseManager) {
-    return createRetryingDatabaseService({
-      delegate: databaseManager.forPlugin(pluginMetadata.getId(), {
-        lifecycle,
-        logger,
-      }),
-      logger,
-    });
+  async factory({
+    config,
+    lifecycle,
+    logger,
+    pluginMetadata,
+    rootLifecycle,
+    rootLogger,
+  }) {
+    const pluginId = pluginMetadata.getId();
+    const createDelegate = () =>
+      createDatabaseManager(config, { rootLifecycle, rootLogger }).forPlugin(
+        pluginId,
+        { lifecycle, logger },
+      );
+    return createRetryingDatabaseService({ createDelegate, logger });
   },
 });

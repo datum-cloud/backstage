@@ -22,13 +22,31 @@ const createLogger = (): LoggerService => {
   return logger;
 };
 
+const createMemoizingDelegateFactory = (
+  connect: () => Promise<Awaited<ReturnType<DatabaseService['getClient']>>>,
+) => {
+  const connects = jest.fn(connect);
+  const createDelegate = jest.fn((): DatabaseService => {
+    let cached: ReturnType<DatabaseService['getClient']> | undefined;
+    return {
+      getClient() {
+        if (!cached) {
+          cached = connects();
+        }
+        return cached;
+      },
+    };
+  });
+  return { createDelegate, connects };
+};
+
 describe('createRetryingDatabaseService', () => {
   it('returns the client without waiting when the database is reachable', async () => {
     const getClient = jest.fn().mockResolvedValue(knexStub);
     const sleep = jest.fn().mockResolvedValue(undefined);
 
     const service = createRetryingDatabaseService({
-      delegate: { getClient },
+      createDelegate: () => ({ getClient }),
       logger: createLogger(),
       sleep,
     });
@@ -40,7 +58,7 @@ describe('createRetryingDatabaseService', () => {
 
   it('rides out a brief outage and then connects', async () => {
     let clock = 0;
-    const getClient = jest
+    const connect = jest
       .fn()
       .mockRejectedValueOnce(new Error('getaddrinfo ENOTFOUND postgres'))
       .mockRejectedValueOnce(new Error('getaddrinfo ENOTFOUND postgres'))
@@ -50,7 +68,7 @@ describe('createRetryingDatabaseService', () => {
     });
 
     const service = createRetryingDatabaseService({
-      delegate: { getClient },
+      createDelegate: () => ({ getClient: connect }),
       logger: createLogger(),
       timeoutMs: 30_000,
       intervalMs: 1_000,
@@ -59,20 +77,46 @@ describe('createRetryingDatabaseService', () => {
     });
 
     await expect(service.getClient()).resolves.toBe(knexStub);
-    expect(getClient).toHaveBeenCalledTimes(3);
+    expect(connect).toHaveBeenCalledTimes(3);
     expect(sleep).toHaveBeenCalledTimes(2);
   });
 
-  it('gives up with the last error once the retry window closes', async () => {
+  it('retries against a delegate that caches its first failure', async () => {
     let clock = 0;
-    const error = new Error('getaddrinfo ENOTFOUND postgres');
-    const getClient = jest.fn().mockRejectedValue(error);
+    const { createDelegate, connects } = createMemoizingDelegateFactory(
+      jest
+        .fn()
+        .mockRejectedValueOnce(new Error('getaddrinfo ENOTFOUND postgres'))
+        .mockResolvedValue(knexStub),
+    );
     const sleep = jest.fn(async (ms: number) => {
       clock += ms;
     });
 
     const service = createRetryingDatabaseService({
-      delegate: { getClient },
+      createDelegate,
+      logger: createLogger(),
+      timeoutMs: 30_000,
+      intervalMs: 1_000,
+      now: () => clock,
+      sleep,
+    });
+
+    await expect(service.getClient()).resolves.toBe(knexStub);
+    expect(connects).toHaveBeenCalledTimes(2);
+    expect(createDelegate).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives up with the last error once the retry window closes', async () => {
+    let clock = 0;
+    const error = new Error('getaddrinfo ENOTFOUND postgres');
+    const connect = jest.fn().mockRejectedValue(error);
+    const sleep = jest.fn(async (ms: number) => {
+      clock += ms;
+    });
+
+    const service = createRetryingDatabaseService({
+      createDelegate: () => ({ getClient: connect }),
       logger: createLogger(),
       timeoutMs: 5_000,
       intervalMs: 1_000,
@@ -81,15 +125,15 @@ describe('createRetryingDatabaseService', () => {
     });
 
     await expect(service.getClient()).rejects.toThrow(error);
-    expect(getClient).toHaveBeenCalledTimes(6);
+    expect(connect).toHaveBeenCalledTimes(6);
   });
 
   it('passes the migration settings of the wrapped service through', () => {
     const service = createRetryingDatabaseService({
-      delegate: {
+      createDelegate: () => ({
         getClient: jest.fn().mockResolvedValue(knexStub),
         migrations: { skip: true },
-      },
+      }),
       logger: createLogger(),
     });
 
