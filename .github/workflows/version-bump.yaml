@@ -9,9 +9,15 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  BUMP_BRANCH: chore/backstage-version-bump
+
 jobs:
   bump:
     runs-on: ubuntu-latest
+    outputs:
+      pull-request-number: ${{ steps.pr.outputs.pull-request-number }}
+      pull-request-operation: ${{ steps.pr.outputs.pull-request-operation }}
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -28,19 +34,53 @@ jobs:
         run: yarn install --immutable
 
       - name: Open pull request
+        id: pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.BACKSTAGE_BUMP_TOKEN || github.token }}
-          branch: chore/backstage-version-bump
+          branch: ${{ env.BUMP_BRANCH }}
           delete-branch: true
           base: main
+          draft: always-true
           title: 'chore: bump Backstage to latest release'
           commit-message: 'chore: bump Backstage packages'
           labels: dependencies
           body: |
-            Automated `yarn backstage-cli versions:bump` — moves every
+            Automated `yarn backstage-cli versions:bump` moves every
             `@backstage/*` package to the latest coordinated release and
             updates `backstage.json`.
 
-            Review the diff and let the `E2E` workflow validate the kind
-            deployment before merging.
+            This pull request opens as a draft and the bump workflow run
+            marks it ready once the build, the unit tests and the kind
+            deployment pass against this branch. A draft that stays a draft
+            has a failure to read in that run.
+
+  validate:
+    needs: bump
+    if: needs.bump.outputs.pull-request-operation == 'created' || needs.bump.outputs.pull-request-operation == 'updated'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yaml
+    with:
+      ref: chore/backstage-version-bump
+
+  validate-e2e:
+    needs: bump
+    if: needs.bump.outputs.pull-request-operation == 'created' || needs.bump.outputs.pull-request-operation == 'updated'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/e2e.yaml
+    with:
+      ref: chore/backstage-version-bump
+
+  publish-result:
+    needs: [bump, validate, validate-e2e]
+    if: always() && needs.bump.outputs.pull-request-number != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark the pull request ready
+        if: needs.validate.result == 'success' && needs.validate-e2e.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ needs.bump.outputs.pull-request-number }}
+        run: gh pr ready "$PR" --repo "$GITHUB_REPOSITORY"
