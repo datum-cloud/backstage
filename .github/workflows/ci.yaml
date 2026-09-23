@@ -3,6 +3,12 @@ name: CI
 on:
   pull_request:
   workflow_call:
+    inputs:
+      ref:
+        description: The commit, branch or tag to check out. Defaults to the calling ref.
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -13,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
       - name: Setup Node and Yarn
         uses: ./.github/actions/setup-node-yarn
       - name: Typecheck
@@ -23,6 +31,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
       - name: Setup Node and Yarn
         uses: ./.github/actions/setup-node-yarn
       - name: Lint
@@ -35,6 +45,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
       - name: Setup Node and Yarn
         uses: ./.github/actions/setup-node-yarn
       - name: Unit tests
