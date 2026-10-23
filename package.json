@@ -52,7 +52,8 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "protobufjs": "7.6.4",
-    "tar": "7.5.22"
+    "tar": "7.5.22",
+    "dompurify": "3.4.17"
   },
   "prettier": "@backstage/cli/config/prettier",
   "lint-staged": {
