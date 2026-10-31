@@ -23,6 +23,8 @@ RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {
 # Stage 2 - Install dependencies and build packages
 FROM node:26.13.0-trixie-slim AS build
 
+RUN npm install -g yarn@1.22.22
+
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
 
@@ -60,6 +62,8 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
 
 # Stage 3 - Build the actual backend image and install production dependencies
 FROM node:26.13.0-trixie-slim
+
+RUN npm install -g yarn@1.22.22
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
