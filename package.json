@@ -54,6 +54,7 @@
     "protobufjs": "7.6.5",
     "tar": "7.5.22",
     "dompurify": "3.4.17",
+    "webpack-dev-middleware": "^7.4.6",
     "@azure/msal-node": "^7.1.0",
     "@graphql-tools/utils": "^12.1.0",
     "basic-ftp": "^6.2.2",
