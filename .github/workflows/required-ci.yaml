@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: datum-cloud/actions/.github/workflows/ci-basic.yaml@v1.26.0
+    with:
+      path: .github
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        CI=true npx --yes -p node@26.13.0 -- bash -euo pipefail -c "yarn install --immutable && yarn tsc:full && yarn lint:all && yarn test:all"
