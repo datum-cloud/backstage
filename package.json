@@ -67,7 +67,8 @@
     "mockttp/uuid": "^11.1.1",
     "sockjs/uuid": "^11.1.1",
     "teeny-request/uuid": "^11.1.1",
-    "@internationalized/date": "^3.12.4"
+    "@internationalized/date": "^3.12.4",
+    "isomorphic-git": "^1.38.6"
   },
   "prettier": "@backstage/cli/config/prettier",
   "lint-staged": {
