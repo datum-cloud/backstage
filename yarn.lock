@@ -4581,23 +4581,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals-backend@npm:^0.3.18":
-  version: 0.3.21
-  resolution: "@backstage/plugin-signals-backend@npm:0.3.21"
+"@backstage/plugin-signals-backend@npm:0.3.18":
+  version: 0.3.18
+  resolution: "@backstage/plugin-signals-backend@npm:0.3.18"
   dependencies:
-    "@backstage/backend-plugin-api": "npm:^1.12.0"
-    "@backstage/config": "npm:^1.3.11"
-    "@backstage/plugin-events-node": "npm:^0.5.0"
-    "@backstage/plugin-signals-node": "npm:^0.2.7"
+    "@backstage/backend-plugin-api": "npm:^1.10.0"
+    "@backstage/config": "npm:^1.3.8"
+    "@backstage/plugin-events-node": "npm:^0.4.25"
+    "@backstage/plugin-signals-node": "npm:^0.2.4"
     "@backstage/types": "npm:^1.2.2"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     ws: "npm:^8.20.1"
-  checksum: 10c0/267d84c3ae3b164fb652a683b7fe30df96e1e9342cbb6cc0a3aeca24b9d0c5438456ef7beb1036f5a680f879ff32311e0fa32a05e5c0fc81a35f3dbbaae3125c
+  checksum: 10c0/e4b626880c5d6be29ba37b169ef7d402e5fd7f02fede17c9bdb4cbb106541d371ff5e10254feb985427c8180387506a9a28fc3497ca33086475608aa0517bd19
   languageName: node
   linkType: hard
 
-"@backstage/plugin-signals-node@npm:^0.2.7":
+"@backstage/plugin-signals-node@npm:^0.2.4, @backstage/plugin-signals-node@npm:^0.2.7":
   version: 0.2.7
   resolution: "@backstage/plugin-signals-node@npm:0.2.7"
   dependencies:
@@ -14187,7 +14187,7 @@ __metadata:
     "@backstage/plugin-search-backend-module-pg": "npm:^0.5.58"
     "@backstage/plugin-search-backend-module-techdocs": "npm:^0.4.17"
     "@backstage/plugin-search-backend-node": "npm:^1.4.7"
-    "@backstage/plugin-signals-backend": "npm:^0.3.18"
+    "@backstage/plugin-signals-backend": "npm:0.3.18"
     "@backstage/plugin-techdocs-backend": "npm:^2.2.4"
     app: "link:../app"
     better-sqlite3: "npm:^12.0.0"
