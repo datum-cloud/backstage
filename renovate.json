@@ -5,8 +5,12 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["@backstage/**"],
-      "groupName": "backstage"
+      "matchPackageNames": [
+        "@backstage/**"
+      ],
+      "groupName": "backstage",
+      "enabled": false,
+      "description": "Backstage patch updates pull packages from the next release and break kind-e2e; paused until the release upgrade in datum-cloud/backstage#141, which moves @backstage/* with versions:bump and removes this"
     }
   ]
 }
